@@ -127,15 +127,17 @@ def _resolve_publish(parsed: ParsedCommand) -> Resolution:
 
 def _resolve_commit(parsed: ParsedCommand) -> Resolution:
     root = _repo_root()
-    if "all" in parsed.context:
+    context = _context_without_message(parsed)
+    explicit_message = _explicit_commit_message(parsed)
+    if "all" in context:
         return _resolve_commit_all(parsed)
 
     changed = _changed_files(root)
     if not changed:
         raise ResolveError("there is nothing to commit man")
 
-    selected = _select_commit_files(changed, parsed.context)
-    message = _commit_message(selected, parsed.context)
+    selected = _select_commit_files(changed, context)
+    message = explicit_message or _commit_message(selected, context)
     commands = [["git", "add", *_relative_paths(selected, root)], ["git", "commit", "-m", message]]
 
     return Resolution(commands=commands, risk=MILD, message=messages.pick(messages.GIT_COMMIT))
@@ -145,9 +147,13 @@ def _resolve_commit_all(parsed: ParsedCommand) -> Resolution:
     if not _has_changes_in_current_path():
         raise ResolveError("there is nothing to commit in this folder")
 
-    useful_words = [word for word in parsed.context if word not in LOW_SIGNAL_WORDS]
-    subject = " ".join(_format_word(word) for word in useful_words[:5]) or "current folder"
-    message = f"Update {subject}"
+    explicit_message = _explicit_commit_message(parsed)
+    if explicit_message:
+        message = explicit_message
+    else:
+        useful_words = [word for word in _context_without_message(parsed) if word not in LOW_SIGNAL_WORDS]
+        subject = " ".join(_format_word(word) for word in useful_words[:5]) or "current folder"
+        message = f"Update {subject}"
 
     return Resolution(
         commands=[["git", "add", "."], ["git", "commit", "-m", message]],
@@ -214,6 +220,32 @@ def _remote_url(context: list[str]) -> str | None:
 
 def _action_tail(parsed: ParsedCommand) -> list[str]:
     return parsed.raw_args[2:]
+
+
+def _context_without_message(parsed: ParsedCommand) -> list[str]:
+    marker_index = _message_marker_index(_action_tail(parsed))
+    if marker_index is None:
+        return parsed.context
+    return [word.lower() for word in _action_tail(parsed)[:marker_index]]
+
+
+def _explicit_commit_message(parsed: ParsedCommand) -> str | None:
+    tail = _action_tail(parsed)
+    marker_index = _message_marker_index(tail)
+    if marker_index is None:
+        return None
+
+    message = " ".join(tail[marker_index + 1 :]).strip()
+    if not message:
+        raise ResolveError("commit message marker found, but the message ran away.")
+    return message
+
+
+def _message_marker_index(words: list[str]) -> int | None:
+    for index, word in enumerate(words):
+        if word.lower() in {"-m", "--message", "message", "msg"}:
+            return index
+    return None
 
 
 def _changed_files(root: Path) -> list[FileCandidate]:

@@ -125,3 +125,40 @@ def test_git_commit_all_uses_extra_words_for_message(monkeypatch):
     resolution = git.resolve(parsed)
 
     assert resolution.commands[1] == ["git", "commit", "-m", "Update easy terminal"]
+
+
+def test_git_commit_all_uses_explicit_message(monkeypatch):
+    parsed = ParsedCommand(
+        family="git",
+        action="commit",
+        context=["all", "-m", "add", "first", "version"],
+        raw_args=["git", "commit", "all", "-m", "Add first version"],
+    )
+    monkeypatch.setattr(git, "_repo_root", lambda: Path("C:/repo"))
+    monkeypatch.setattr(git, "_has_changes_in_current_path", lambda: True)
+
+    resolution = git.resolve(parsed)
+
+    assert resolution.commands[1] == ["git", "commit", "-m", "Add first version"]
+
+
+def test_git_commit_fuzzy_uses_explicit_message(tmp_path, monkeypatch):
+    target = tmp_path / "game_project.py"
+    target.write_text("print('game')", encoding="utf-8")
+    candidate = candidate_from_path(target, tmp_path, is_git_changed=True)
+    parsed = ParsedCommand(
+        family="git",
+        action="commit",
+        context=["game", "message", "add", "arcade", "mode"],
+        raw_args=["git", "commit", "game", "message", "Add arcade mode"],
+    )
+
+    monkeypatch.setattr(git, "_repo_root", lambda: Path(tmp_path))
+    monkeypatch.setattr(git, "_changed_files", lambda root: [candidate])
+
+    resolution = git.resolve(parsed)
+
+    assert resolution.commands == [
+        ["git", "add", "./game_project.py"],
+        ["git", "commit", "-m", "Add arcade mode"],
+    ]

@@ -37,6 +37,13 @@ Commands:
       Stage everything under the current folder and commit it.
       Example: easy git commit all
 
+  easy git commit all -m "Add first version"
+      Stage everything under the current folder with your exact commit message.
+
+  easy git commit <context> message <your message>
+      Fuzzy-match files with context, then use your exact commit message.
+      Example: easy git commit website message Update homepage layout
+
   easy git push
       Run git push.
 
@@ -72,7 +79,7 @@ Quick repo tutorial:
   4. Create an empty GitHub repo with no README/license/gitignore.
   5. Run: easy git remote https://github.com/you/project.git
   6. Run: easy git status
-  7. Run: easy git commit all
+  7. Run: easy git commit all -m "Add first version"
   8. Run: easy git push first
 """
 
