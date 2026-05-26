@@ -1,6 +1,12 @@
 # Easy Terminal
 
-Easy Terminal is a rule-based fuzzy command resolver for loose but command-centered terminal syntax.
+Vibe-coding hurt your brain? Did you forget how to commit with git? Don't worry.
+
+Easy Terminal is here for you.
+
+Easy Terminal is a rule-based fuzzy command resolver for loose but command-centered terminal syntax. 
+
+TRANSLATION: Easy Terminal helps you forget about git syntax so you can commit with terminal and look not stupid 
 
 ```bash
 easy doc
