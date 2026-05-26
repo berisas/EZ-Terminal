@@ -22,8 +22,12 @@ pip install -e ".[dev]"
 
 - `easy git status`
 - `easy doc`
+- `easy git repo check`
+- `easy git init`
+- `easy git remote [url]`
 - `easy git commit <context>`
 - `easy git push [context]`
+- `easy git publish [url]`
 - `easy python run <context>`
 - `easy open <context>`
 - `easy find <context>`
