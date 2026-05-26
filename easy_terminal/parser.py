@@ -6,7 +6,7 @@ SUPPORTED = {
     "doc": {"doc"},
     "docs": {"doc"},
     "help": {"doc"},
-    "git": {"status", "commit", "push"},
+    "git": {"status", "commit", "push", "init", "remote", "repo", "publish"},
     "python": {"run"},
     "open": {"open"},
     "find": {"find"},

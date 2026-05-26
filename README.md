@@ -26,6 +26,7 @@ pip install -e ".[dev]"
 - `easy git init`
 - `easy git remote [url]`
 - `easy git commit <context>`
+- `easy git commit all`
 - `easy git push [context]`
 - `easy git publish [url]`
 - `easy python run <context>`
