@@ -16,9 +16,14 @@ def resolve(parsed: ParsedCommand) -> Resolution:
     location = _location(parsed.context)
     extensions = _extensions(parsed.context)
     big = any(word in parsed.context for word in {"big", "large", "huge"})
-    recent = any(word in parsed.context for word in {"recent", "recently", "today", "newest", "latest"})
+    recent = any(
+        word in parsed.context for word in {"recent", "recently", "today", "newest", "latest"}
+    )
 
-    command = _windows_find(location, extensions, big, recent) if sys.platform.startswith("win") else _posix_find(location, extensions, big, recent)
+    if sys.platform.startswith("win"):
+        command = _windows_find(location, extensions, big, recent)
+    else:
+        command = _posix_find(location, extensions, big, recent)
     return Resolution(commands=[command], risk=SAFE, message=messages.pick(messages.FOUND))
 
 

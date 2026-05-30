@@ -17,7 +17,7 @@ Commands:
 
   easy git repo check
       Show repo root, branch, remotes, and short status.
-      Use this before pushing if something feels cursed.
+      Use this before pushing when you want to confirm repository state.
 
   easy git init
       Create a Git repo in the current folder.
@@ -69,7 +69,7 @@ Commands:
 Notes:
   Start with a real command family: git, python, open, find.
   Loose words after that are for filenames, folders, extensions, and recency.
-  Vague assistant requests are rejected. Terminal still has standards.
+  Vague assistant-style requests are rejected so generated commands stay predictable.
 
 Quick repo tutorial:
   1. cd into the project folder you want to publish.

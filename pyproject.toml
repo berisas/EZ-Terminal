@@ -21,6 +21,9 @@ dev = [
 [project.scripts]
 easy = "easy_terminal.main:app"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src"]

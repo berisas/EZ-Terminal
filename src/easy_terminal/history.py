@@ -5,7 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-def save_history(input_text: str, commands: list[list[str]], risk: str, root: Path | None = None) -> None:
+def save_history(
+    input_text: str,
+    commands: list[list[str]],
+    risk: str,
+    root: Path | None = None,
+) -> None:
     base = root or Path.cwd()
     history_dir = base / ".easy"
     history_dir.mkdir(exist_ok=True)

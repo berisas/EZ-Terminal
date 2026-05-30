@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os
-import sys
 from pathlib import Path
 
 from easy_terminal import messages
@@ -13,39 +11,41 @@ from easy_terminal.scoring import is_ambiguous, rank_candidates
 
 
 def resolve(parsed: ParsedCommand) -> Resolution:
-    candidates = scan_files(Path.cwd())
-    ranked = rank_candidates(candidates, parsed.context)
+    if parsed.action != "run":
+        raise ResolveError("Unsupported Python action.")
+
+    candidates = [
+        candidate for candidate in scan_files(Path.cwd()) if candidate.extension == ".py"
+    ]
+    ranked = rank_candidates(candidates, parsed.context, extension=".py", prefer_entry_files=True)
 
     if not ranked:
-        wanted = " ".join(parsed.context) or "that file"
-        raise ResolveError(f"could not find {wanted}.")
+        raise ResolveError("No matching Python file found.")
 
     if is_ambiguous(ranked):
-        raise ResolveError(_ambiguous(ranked))
+        raise ResolveError(
+            _ambiguous("Multiple Python files matched. Add more specific words:", ranked)
+        )
 
     target = ranked[0][0].path
-    return Resolution(commands=[_open_command(target)], risk=SAFE, message=messages.pick(messages.OPENED))
-
-
-def _open_command(path: Path) -> list[str]:
-    if sys.platform.startswith("win"):
-        return ["cmd", "/c", "start", "", str(path)]
-    if sys.platform == "darwin":
-        return ["open", str(path)]
-    return ["xdg-open", str(path)]
+    return Resolution(
+        commands=[["python", _relative(target)]],
+        risk=SAFE,
+        message=messages.pick(messages.PYTHON_RUN),
+    )
 
 
 def _relative(path: Path) -> str:
     try:
         return "./" + path.resolve().relative_to(Path.cwd().resolve()).as_posix()
     except ValueError:
-        return os.fspath(path)
+        return str(path)
 
 
-def _ambiguous(ranked) -> str:
-    lines = ["can you be more vague bro"]
+def _ambiguous(title: str, ranked) -> str:
+    lines = [title]
     for index, (candidate, _) in enumerate(ranked[:5], 1):
         lines.append(f"{index}. {_relative(candidate.path)}")
     lines.append("")
-    lines.append("try: easy open <more specific words>")
+    lines.append("try: easy python run <more specific words>")
     return "\n".join(lines)

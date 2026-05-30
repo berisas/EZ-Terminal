@@ -31,7 +31,7 @@ def run(args: list[str] = typer.Argument(None)) -> None:
         raise typer.Exit(1) from exc
 
     if resolution.risk == DANGEROUS:
-        typer.echo("that command is dangerous, are you sure you want to run it? (y/n)")
+        typer.echo("Dangerous command blocked. Review and run it manually if intended.")
         raise typer.Exit(1)
 
     if resolution.commands:

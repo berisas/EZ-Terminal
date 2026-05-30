@@ -1,12 +1,10 @@
 # Easy Terminal
 
-Vibe-coding hurt your brain? Did you forget how to commit with git? Don't worry.
+Easy Terminal is a rule-based fuzzy command resolver for loose but command-centered
+terminal syntax.
 
-Easy Terminal is here for you.
-
-Easy Terminal is a rule-based fuzzy command resolver for loose but command-centered terminal syntax. 
-
-TRANSLATION: Easy Terminal helps you forget about git syntax so you can commit with terminal and look not stupid 
+It is designed for developers who know the command family they want, but want help
+resolving paths, files, common flags, commit messages, and routine command formatting.
 
 ```bash
 easy doc
@@ -16,7 +14,16 @@ easy open resume pdf
 easy find big videos downloads
 ```
 
-The user still starts with a real command family. Easy Terminal helps resolve paths, files, flags, commit messages, and common formatting.
+The user still starts with a real command family. Easy Terminal handles the fuzzy
+context after that.
+
+## Project Structure
+
+- `src/easy_terminal/` - Application package and command resolvers.
+- `src/easy_terminal/commands/` - Command-family implementations.
+- `tests/` - Unit tests for parsing, scoring, resolver behavior, and docs output.
+- `.easy/` - Local runtime history, ignored by Git.
+- `pyproject.toml` - Package metadata, dependencies, CLI entry point, and test config.
 
 ## Install for local development
 

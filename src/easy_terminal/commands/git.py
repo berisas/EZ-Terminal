@@ -32,7 +32,7 @@ def resolve(parsed: ParsedCommand) -> Resolution:
         return Resolution(
             commands=[["git", "init"]],
             risk=MILD,
-            message="initialized the repo. git has entered the room.",
+            message="Repository initialized.",
         )
 
     if parsed.action == "status":
@@ -68,7 +68,7 @@ def resolve(parsed: ParsedCommand) -> Resolution:
     if parsed.action == "commit":
         return _resolve_commit(parsed)
 
-    raise ResolveError("I don't get it.")
+    raise ResolveError("Unsupported Git action.")
 
 
 def _resolve_repo(parsed: ParsedCommand) -> Resolution:
@@ -80,7 +80,7 @@ def _resolve_repo(parsed: ParsedCommand) -> Resolution:
             ["git", "status", "--short", "--branch"],
         ],
         risk=SAFE,
-        message="repo checked. reality has been consulted.",
+        message="Repository context checked.",
     )
 
 
@@ -90,7 +90,7 @@ def _resolve_remote(parsed: ParsedCommand) -> Resolution:
         return Resolution(
             commands=[["git", "remote", "-v"]],
             risk=SAFE,
-            message="remote checked. the internet string has spoken.",
+            message="Remote configuration checked.",
         )
 
     if _has_origin():
@@ -101,7 +101,7 @@ def _resolve_remote(parsed: ParsedCommand) -> Resolution:
     return Resolution(
         commands=[command],
         risk=MILD,
-        message="origin set. try not to point it at the wrong universe.",
+        message="Origin remote configured.",
     )
 
 
@@ -115,13 +115,15 @@ def _resolve_publish(parsed: ParsedCommand) -> Resolution:
         else:
             commands.append(["git", "remote", "add", "origin", url])
     elif not _has_origin():
-        raise ResolveError("no origin remote. try: easy git publish https://github.com/user/repo.git")
+        raise ResolveError(
+            "No origin remote. Try: easy git publish https://github.com/user/repo.git"
+        )
 
     commands.append(["git", "push", "-u", "origin", "main"])
     return Resolution(
         commands=commands,
         risk=MILD,
-        message="published it. GitHub has been notified.",
+        message="Repository published.",
     )
 
 
@@ -134,7 +136,7 @@ def _resolve_commit(parsed: ParsedCommand) -> Resolution:
 
     changed = _changed_files(root)
     if not changed:
-        raise ResolveError("there is nothing to commit man")
+        raise ResolveError("There is nothing to commit.")
 
     selected = _select_commit_files(changed, context)
     message = explicit_message or _commit_message(selected, context)
@@ -145,13 +147,15 @@ def _resolve_commit(parsed: ParsedCommand) -> Resolution:
 
 def _resolve_commit_all(parsed: ParsedCommand) -> Resolution:
     if not _has_changes_in_current_path():
-        raise ResolveError("there is nothing to commit in this folder")
+        raise ResolveError("There is nothing to commit in this folder.")
 
     explicit_message = _explicit_commit_message(parsed)
     if explicit_message:
         message = explicit_message
     else:
-        useful_words = [word for word in _context_without_message(parsed) if word not in LOW_SIGNAL_WORDS]
+        useful_words = [
+            word for word in _context_without_message(parsed) if word not in LOW_SIGNAL_WORDS
+        ]
         subject = " ".join(_format_word(word) for word in useful_words[:5]) or "current folder"
         message = f"Update {subject}"
 
@@ -170,7 +174,7 @@ def _repo_root() -> Path:
         text=True,
     )
     if completed.returncode != 0:
-        raise ResolveError("you are lost")
+        raise ResolveError("Current directory is not inside a Git repository.")
     return Path(completed.stdout.strip()).resolve()
 
 
@@ -193,7 +197,7 @@ def _current_branch() -> str:
     )
     branch = completed.stdout.strip()
     if completed.returncode != 0 or not branch:
-        raise ResolveError("could not detect the current branch. git is wearing a disguise.")
+        raise ResolveError("Could not detect the current branch.")
     return branch
 
 
@@ -205,7 +209,7 @@ def _has_changes_in_current_path() -> bool:
         text=True,
     )
     if completed.returncode != 0:
-        raise ResolveError("git status failed. git is being dramatic.")
+        raise ResolveError("Git status failed.")
     return bool(completed.stdout.strip())
 
 
@@ -237,7 +241,7 @@ def _explicit_commit_message(parsed: ParsedCommand) -> str | None:
 
     message = " ".join(tail[marker_index + 1 :]).strip()
     if not message:
-        raise ResolveError("commit message marker found, but the message ran away.")
+        raise ResolveError("Commit message marker found, but no message was provided.")
     return message
 
 
@@ -256,7 +260,7 @@ def _changed_files(root: Path) -> list[FileCandidate]:
         text=True,
     )
     if completed.returncode != 0:
-        raise ResolveError("claude debug this please")
+        raise ResolveError("Could not read changed files from Git status.")
 
     candidates: list[FileCandidate] = []
     for line in completed.stdout.splitlines():
@@ -279,7 +283,10 @@ def _status_path(line: str) -> str:
     return path.strip('"')
 
 
-def _select_commit_files(candidates: list[FileCandidate], context: list[str]) -> list[FileCandidate]:
+def _select_commit_files(
+    candidates: list[FileCandidate],
+    context: list[str],
+) -> list[FileCandidate]:
     if len(candidates) == 1:
         return candidates
 
@@ -333,5 +340,8 @@ def _format_word(word: str) -> str:
 
 
 def _too_many_changed(candidates: list[FileCandidate]) -> str:
-    shown = "\n".join(f"{index}. ./{candidate.path.name}" for index, candidate in enumerate(candidates[:5], 1))
-    return f"too many changed files:\n{shown}\n\ntry: easy git commit <more specific words>"
+    shown = "\n".join(
+        f"{index}. ./{candidate.path.name}"
+        for index, candidate in enumerate(candidates[:5], 1)
+    )
+    return f"Too many changed files:\n{shown}\n\nTry: easy git commit <more specific words>"

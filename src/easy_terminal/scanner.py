@@ -48,7 +48,11 @@ def scan_files(
     return candidates
 
 
-def candidate_from_path(path: Path, root: Path | None = None, is_git_changed: bool = False) -> FileCandidate:
+def candidate_from_path(
+    path: Path,
+    root: Path | None = None,
+    is_git_changed: bool = False,
+) -> FileCandidate:
     base = (root or Path.cwd()).resolve()
     resolved = path.resolve()
     stat = resolved.stat()
