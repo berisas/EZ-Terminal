@@ -10,4 +10,7 @@ def test_doc_resolution_prints_help_without_commands():
     assert resolution.commands == []
     assert resolution.risk == "safe"
     assert "easy git commit <context>" in resolution.message
+    assert "easy git branch list" in resolution.message
+    assert "easy git rebase interactive <branch>" in resolution.message
+    assert "easy make file <name> <type>" in resolution.message
     assert "easy find <context>" in resolution.message
