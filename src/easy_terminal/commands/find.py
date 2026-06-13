@@ -17,7 +17,7 @@ def resolve(parsed: ParsedCommand) -> Resolution:
     extensions = _extensions(parsed.context)
     big = any(word in parsed.context for word in {"big", "large", "huge"})
     recent = any(
-        word in parsed.context for word in {"recent", "recently", "today", "newest", "latest"}
+        word in parsed.context for word in {"recent", "recently", "today", "newest", "latest", "new"}
     )
 
     if sys.platform.startswith("win"):

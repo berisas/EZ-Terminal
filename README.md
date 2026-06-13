@@ -31,20 +31,71 @@ context after that.
 pip install -e ".[dev]"
 ```
 
-## Supported MVP commands
+## Supported Commands
 
+### Git Commands
+
+Easy Terminal provides fuzzy resolution for comprehensive git workflows:
+
+**Commit & Status:**
 - `easy git status`
-- `easy doc`
-- `easy git repo check`
 - `easy git init`
+- `easy git commit <context>` (fuzzy file selection)
+- `easy git commit all` (current directory only)
+- `easy git commit all -m "message"` (explicit message)
+
+**Remote & Publishing:**
 - `easy git remote [url]`
-- `easy git commit <context>`
-- `easy git commit all`
-- `easy git commit all -m "Your message"`
+- `easy git repo check`
 - `easy git push [context]`
 - `easy git publish [url]`
-- `easy python run <context>`
-- `easy open <context>`
-- `easy find <context>`
 
-Executed commands are logged to `.easy/history.json`.
+**Branch Management:**
+- `easy git branch list` (local and remote)
+- `easy git branch copy <old> <new>`
+- `easy git branch delete <branch>`
+- `easy git branch delete <branch> force`
+- `easy git branch rename <old> <new>`
+- `easy git branch merged` (list merged branches)
+- `easy git branch unmerged` (list unmerged branches)
+- `easy git switch <branch>` (switch to branch)
+- `easy git switch new <branch>` (create and switch)
+
+**Merge & Rebase:**
+- `easy git merge <branch>` (standard merge)
+- `easy git merge no-ff <branch>` (merge with commit)
+- `easy git merge squash <branch>` (squash merge)
+- `easy git rebase <branch>` (rebase onto branch)
+- `easy git rebase interactive <branch>` (interactive rebase)
+- `easy git rebase continue` (continue after conflicts)
+- `easy git rebase abort` (abort rebase)
+
+**Pull & History:**
+- `easy git pull` (fetch and merge)
+- `easy git pull rebase` (fetch and rebase)
+- `easy git log` (last 10 commits)
+- `easy git log past <count>` (last n commits)
+- `easy git log graph` (visual branch history)
+- `easy git log diff` (show commit diffs)
+- `easy git branch log <branch>` (branch-specific history)
+
+**Inspect Changes:**
+- `easy git diff` (unstaged changes)
+- `easy git diff staged` (staged changes)
+- `easy git diff <branch>` (compare with branch)
+- `easy git show <commit>` (commit details)
+
+**Undo & Cleanup:**
+- `easy git reset <file>` (unstage file)
+- `easy git revert <commit>` (create undo commit)
+- `easy git restore <file>` (discard working tree changes)
+- `easy git clean untracked` (remove untracked files)
+
+### Other Commands
+
+- `easy doc` - Show documentation
+- `easy python run <context>` - Run Python files by context
+- `easy open <context>` - Open files by fuzzy match
+- `easy find <context>` - Find files and directories
+
+All executed commands are logged to `.easy/history.json`.

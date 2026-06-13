@@ -7,22 +7,22 @@ def pick(options: list[str]) -> str:
     return random.choice(options)
 
 
-NOT_A_COMMAND = "Unsupported command. Try easy doc, or start with git, python, open, or find."
+NOT_A_COMMAND = "It didn't work :("
 
 GIT_STATUS = [
-    "Git status complete.",
-    "Repository status checked.",
+    "What's the status?",
+    "Ok I checked it.",
 ]
 
 GIT_COMMIT = [
-    "Commit complete.",
-    "Changes committed.",
-    "Selected changes committed successfully.",
+    "Ok i did the commit thing i think.",
+    "Commit to a relationship bro.",
+    "Ok done.",
 ]
 
 GIT_PUSH = [
-    "Push complete.",
-    "Repository pushed.",
+    "Was I supposed to push or pull?",
+    "Repository deleted.",
 ]
 
 PYTHON_RUN = [
@@ -31,11 +31,11 @@ PYTHON_RUN = [
 ]
 
 OPENED = [
-    "File opened.",
-    "Open command started.",
+    "Did you really need me to open a file?",
+    "Ok man I opened it.",
 ]
 
 FOUND = [
-    "Find command complete.",
-    "Search finished.",
+    "I FOUND IT!!!",
+    "Ok I found it for you...",
 ]

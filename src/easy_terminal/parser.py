@@ -6,10 +6,15 @@ SUPPORTED = {
     "doc": {"doc"},
     "docs": {"doc"},
     "help": {"doc"},
-    "git": {"status", "commit", "push", "init", "remote", "repo", "publish"},
+    "git": {
+        "status", "commit", "push", "init", "remote", "repo", "publish",
+        "branch", "switch", "merge", "rebase", "pull", "log", "diff",
+        "reset", "revert", "restore", "clean", "show"
+    },
     "python": {"run"},
     "open": {"open"},
     "find": {"find"},
+    "make": {"file"},
 }
 
 

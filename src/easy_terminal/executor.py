@@ -12,7 +12,7 @@ class ExecutionError(RuntimeError):
 
 def execute(resolution: Resolution) -> None:
     if resolution.risk == DANGEROUS:
-        raise ExecutionError("dangerous command blocked")
+        raise ExecutionError("dangerous")
 
     for command in resolution.commands:
         completed = subprocess.run(command, check=False)

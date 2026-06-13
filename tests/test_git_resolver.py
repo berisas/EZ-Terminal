@@ -162,3 +162,389 @@ def test_git_commit_fuzzy_uses_explicit_message(tmp_path, monkeypatch):
         ["git", "add", "./game_project.py"],
         ["git", "commit", "-m", "Add arcade mode"],
     ]
+
+
+# Branch management tests
+def test_git_branch_list():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["list"],
+        raw_args=["git", "branch", "list"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "-a"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_branch_copy():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["copy", "main", "feature"],
+        raw_args=["git", "branch", "copy", "main", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "-c", "main", "feature"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_branch_delete():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["delete", "feature"],
+        raw_args=["git", "branch", "delete", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "-d", "feature"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_branch_force_delete():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["delete", "feature", "force"],
+        raw_args=["git", "branch", "delete", "feature", "force"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "-D", "feature"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_branch_rename():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["rename", "old-name", "new-name"],
+        raw_args=["git", "branch", "rename", "old-name", "new-name"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "-m", "old-name", "new-name"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_branch_merged():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["merged"],
+        raw_args=["git", "branch", "merged"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "--merged"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_branch_unmerged():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["unmerged"],
+        raw_args=["git", "branch", "unmerged"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "branch", "--no-merged"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_branch_log():
+    parsed = ParsedCommand(
+        family="git",
+        action="branch",
+        context=["log", "main"],
+        raw_args=["git", "branch", "log", "main"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "log", "main", "--oneline"]]
+    assert resolution.risk == "safe"
+
+
+# Switch tests
+def test_git_switch_to_branch():
+    parsed = ParsedCommand(
+        family="git",
+        action="switch",
+        context=["feature"],
+        raw_args=["git", "switch", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "switch", "feature"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_switch_create_new_branch():
+    parsed = ParsedCommand(
+        family="git",
+        action="switch",
+        context=["new", "feature"],
+        raw_args=["git", "switch", "new", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "switch", "-c", "feature"]]
+    assert resolution.risk == "mild"
+
+
+# Merge tests
+def test_git_merge_standard():
+    parsed = ParsedCommand(
+        family="git",
+        action="merge",
+        context=["feature"],
+        raw_args=["git", "merge", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "merge", "feature"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_merge_no_ff():
+    parsed = ParsedCommand(
+        family="git",
+        action="merge",
+        context=["no-ff", "feature"],
+        raw_args=["git", "merge", "no-ff", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "merge", "--no-ff", "feature"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_merge_squash():
+    parsed = ParsedCommand(
+        family="git",
+        action="merge",
+        context=["squash", "feature"],
+        raw_args=["git", "merge", "squash", "feature"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "merge", "--squash", "feature"]]
+    assert resolution.risk == "mild"
+
+
+# Rebase tests
+def test_git_rebase_standard():
+    parsed = ParsedCommand(
+        family="git",
+        action="rebase",
+        context=["main"],
+        raw_args=["git", "rebase", "main"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "rebase", "main"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_rebase_interactive():
+    parsed = ParsedCommand(
+        family="git",
+        action="rebase",
+        context=["interactive", "main"],
+        raw_args=["git", "rebase", "interactive", "main"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "rebase", "-i", "main"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_rebase_continue():
+    parsed = ParsedCommand(
+        family="git",
+        action="rebase",
+        context=["continue"],
+        raw_args=["git", "rebase", "continue"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "rebase", "--continue"]]
+    assert resolution.risk == "mild"
+
+
+def test_git_rebase_abort():
+    parsed = ParsedCommand(
+        family="git",
+        action="rebase",
+        context=["abort"],
+        raw_args=["git", "rebase", "abort"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "rebase", "--abort"]]
+    assert resolution.risk == "safe"
+
+
+# Pull tests
+def test_git_pull_standard():
+    parsed = ParsedCommand(
+        family="git",
+        action="pull",
+        context=[],
+        raw_args=["git", "pull"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "pull"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_pull_rebase():
+    parsed = ParsedCommand(
+        family="git",
+        action="pull",
+        context=["rebase"],
+        raw_args=["git", "pull", "rebase"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "pull", "--rebase"]]
+    assert resolution.risk == "safe"
+
+
+# Log tests
+def test_git_log_standard():
+    parsed = ParsedCommand(
+        family="git",
+        action="log",
+        context=[],
+        raw_args=["git", "log"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "log", "--oneline", "-10"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_log_graph():
+    parsed = ParsedCommand(
+        family="git",
+        action="log",
+        context=["graph"],
+        raw_args=["git", "log", "graph"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "log", "--graph", "--oneline", "--all"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_log_past():
+    parsed = ParsedCommand(
+        family="git",
+        action="log",
+        context=["past", "20"],
+        raw_args=["git", "log", "past", "20"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "log", "-20", "--oneline"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_log_diff():
+    parsed = ParsedCommand(
+        family="git",
+        action="log",
+        context=["diff"],
+        raw_args=["git", "log", "diff"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "log", "-p"]]
+    assert resolution.risk == "safe"
+
+
+# Diff tests
+def test_git_diff_unstaged():
+    parsed = ParsedCommand(
+        family="git",
+        action="diff",
+        context=[],
+        raw_args=["git", "diff"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "diff"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_diff_staged():
+    parsed = ParsedCommand(
+        family="git",
+        action="diff",
+        context=["staged"],
+        raw_args=["git", "diff", "staged"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "diff", "--staged"]]
+    assert resolution.risk == "safe"
+
+
+def test_git_diff_branch():
+    parsed = ParsedCommand(
+        family="git",
+        action="diff",
+        context=["main"],
+        raw_args=["git", "diff", "main"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "diff", "main"]]
+    assert resolution.risk == "safe"
+
+
+# Reset tests
+def test_git_reset():
+    parsed = ParsedCommand(
+        family="git",
+        action="reset",
+        context=["file.py"],
+        raw_args=["git", "reset", "file.py"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "reset", "file.py"]]
+    assert resolution.risk == "mild"
+
+
+# Revert tests
+def test_git_revert():
+    parsed = ParsedCommand(
+        family="git",
+        action="revert",
+        context=["abc123"],
+        raw_args=["git", "revert", "abc123"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "revert", "abc123"]]
+    assert resolution.risk == "mild"
+
+
+# Restore tests
+def test_git_restore():
+    parsed = ParsedCommand(
+        family="git",
+        action="restore",
+        context=["file.py"],
+        raw_args=["git", "restore", "file.py"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "restore", "file.py"]]
+    assert resolution.risk == "mild"
+
+
+# Clean tests
+def test_git_clean_untracked():
+    parsed = ParsedCommand(
+        family="git",
+        action="clean",
+        context=["untracked"],
+        raw_args=["git", "clean", "untracked"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "clean", "-fd"]]
+    assert resolution.risk == "mild"
+
+
+# Show tests
+def test_git_show_commit():
+    parsed = ParsedCommand(
+        family="git",
+        action="show",
+        context=["abc123"],
+        raw_args=["git", "show", "abc123"],
+    )
+    resolution = git.resolve(parsed)
+    assert resolution.commands == [["git", "show", "abc123"]]
+    assert resolution.risk == "safe"
+
+
